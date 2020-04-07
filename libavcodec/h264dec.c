@@ -919,6 +919,9 @@ static int finalize_frame(H264Context *h, AVFrame *dst, H264Picture *out, int *g
         }
     }
 
+    // NT: make the qscale_table accessible!
+    dst->qscale_table = out->qscale_table;
+
     return 0;
 }
 
