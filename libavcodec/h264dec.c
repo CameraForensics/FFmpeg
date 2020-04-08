@@ -929,14 +929,21 @@ static int finalize_frame(H264Context *h, AVFrame *dst, H264Picture *out, int *g
 
 int h264_export_qp_table(H264Context *h, AVFrame *f, H264Picture *p, int qp_type)
 {
+
+    // int mb_width = (vstrm->codec->width + 15) / 16;
+    //         std::cout << "Got width" << std::endl;
+    //         int mb_height = (vstrm->codec->height + 15) / 16;
+    //         std::cout << "Got height" << std::endl;
+    //         int mb_stride = mb_width + 1;
+
     AVBufferRef *ref = av_buffer_ref(p->qscale_table_buf);
-    int offset = 2*s->mb_stride + 1;
+    int offset = 2*h->mb_stride + 1;
     if(!ref)
         return AVERROR(ENOMEM);
-    av_assert0(ref->size >= offset + s->mb_stride * ((f->height+15)/16));
+    av_assert0(ref->size >= offset + h->mb_stride * ((f->height+15)/16));
     ref->size -= offset;
     ref->data += offset;
-    return av_frame_set_qp_table(f, ref, s->mb_stride, f->qscale_type);
+    return av_frame_set_qp_table(f, ref, h->mb_stride, f->qscale_type);
 }
 
 
