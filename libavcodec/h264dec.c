@@ -927,7 +927,7 @@ static int finalize_frame(H264Context *h, AVFrame *dst, H264Picture *out, int *g
     return 0;
 }
 
-int h264_export_qp_table(H264Context *h, AVFrame *f, H264Picture *p, int qp_type)
+static int h264_export_qp_table(H264Context *h, AVFrame *f, H264Picture *p, int qp_type)
 {
 
     // int mb_width = (vstrm->codec->width + 15) / 16;
