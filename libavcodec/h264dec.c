@@ -916,14 +916,29 @@ static int finalize_frame(H264Context *h, AVFrame *dst, H264Picture *out, int *g
                                  out->motion_val,
                                  NULL,
                                  h->mb_width, h->mb_height, h->mb_stride, 1);
+            // NT: make the qscale_table accessible!
+            // int ff_mpv_export_qp_table(MpegEncContext *s, AVFrame *f, Picture *p, int qp_type)
+            h264_export_qp_table(h, dst, out, FF_QSCALE_TYPE_H264);
+            // dst->qscale_table = out->qscale_table;
         }
     }
 
-    // NT: make the qscale_table accessible!
-    dst->qscale_table = out->qscale_table;
 
     return 0;
 }
+
+int h264_export_qp_table(H264Context *h, AVFrame *f, H264Picture *p, int qp_type)
+{
+    AVBufferRef *ref = av_buffer_ref(p->qscale_table_buf);
+    int offset = 2*s->mb_stride + 1;
+    if(!ref)
+        return AVERROR(ENOMEM);
+    av_assert0(ref->size >= offset + s->mb_stride * ((f->height+15)/16));
+    ref->size -= offset;
+    ref->data += offset;
+    return av_frame_set_qp_table(f, ref, s->mb_stride, f->qscale_type);
+}
+
 
 static int send_next_delayed_frame(H264Context *h, AVFrame *dst_frame,
                                    int *got_frame, int buf_index)
